@@ -1,24 +1,28 @@
 import textwrap
 
 
+def formatar_dinheiro(valor):
+    return f"R$ {valor:.2f}"
+
+
 def menu():
-    menu = """\n
-    ================ MENU ================
-    [d]\tDepositar
-    [s]\tSacar
-    [e]\tExtrato
-    [nc]\tNova conta
-    [lc]\tListar contas
-    [nu]\tNovo usuário
-    [q]\tSair
-    => """
-    return input(textwrap.dedent(menu))
+    menu_str = textwrap.dedent(f"""
+    {"=" * 18} MENU {"=" * 18}
+    [d] Depositar
+    [s] Sacar
+    [e] Extrato
+    [nc] Nova conta
+    [lc] Listar contas
+    [nu] Novo usuário
+    [q] Sair
+    => """)
+    return input(menu_str)
 
 
-def depositar(saldo, valor, extrato, /):
+def depositar(saldo, valor, extrato):
     if valor > 0:
         saldo += valor
-        extrato += f"Depósito:\tR$ {valor:.2f}\n"
+        extrato += f"Depósito:\t{formatar_dinheiro(valor)}\n"
         print("\n=== Depósito realizado com sucesso! ===")
     else:
         print("\n@@@ Operação falhou! O valor informado é inválido. @@@")
@@ -27,6 +31,12 @@ def depositar(saldo, valor, extrato, /):
 
 
 def sacar(*, saldo, valor, extrato, limite, numero_saques, limite_saques):
+    try:
+        valor = float(valor)
+    except ValueError:
+        print("\n@@@ Operação falhou! Valor inválido. Certifique-se de informar um número. @@@")
+        return saldo, extrato
+
     excedeu_saldo = valor > saldo
     excedeu_limite = valor > limite
     excedeu_saques = numero_saques >= limite_saques
@@ -42,7 +52,7 @@ def sacar(*, saldo, valor, extrato, limite, numero_saques, limite_saques):
 
     elif valor > 0:
         saldo -= valor
-        extrato += f"Saque:\t\tR$ {valor:.2f}\n"
+        extrato += f"Saque:\t\t{formatar_dinheiro(valor)}\n"
         numero_saques += 1
         print("\n=== Saque realizado com sucesso! ===")
 
@@ -52,10 +62,10 @@ def sacar(*, saldo, valor, extrato, limite, numero_saques, limite_saques):
     return saldo, extrato
 
 
-def exibir_extrato(saldo, /, *, extrato):
+def exibir_extrato(saldo, extrato):
     print("\n================ EXTRATO ================")
     print("Não foram realizadas movimentações." if not extrato else extrato)
-    print(f"\nSaldo:\t\tR$ {saldo:.2f}")
+    print(f"\nSaldo:\t\t{formatar_dinheiro(saldo)}")
     print("==========================================")
 
 
